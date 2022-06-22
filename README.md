@@ -1,5 +1,7 @@
 # dart_isolate_loadbalancer
 
+<img src="./images/cover.png"></img>
+
 ## Introduction
 
 If the app needs to use isolates frequently doing some heavy computations, we can create an isolated pool to handle this. The pool can avoid creating and destroying isolates every time for optimizing performance.
