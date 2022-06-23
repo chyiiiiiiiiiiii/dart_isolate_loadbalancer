@@ -4,9 +4,7 @@
 
 ## Introduction
 
-If the app needs to use isolates frequently doing some heavy computations, we can create an isolated pool to handle this. The pool can avoid creating and destroying isolates every time for optimizing performance.
-
-LoadBalancer is in charge of this mission!
+If the app needs to use isolates frequently doing some heavy computations, we can use **LoadBalancer** to create an isolated pool to handle this. The pool can avoid creating and destroying isolates every time for optimizing performance.
 
 ## Artical
 - [What are Async and Isolates in Flutter?
