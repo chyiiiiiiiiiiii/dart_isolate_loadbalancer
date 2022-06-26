@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:isolates/isolates.dart';
 
-/// Create isolate pool that has specific count isoaltes.
-/// Automatic load balancing.
-Future<LoadBalancer> loadBalancer = LoadBalancer.create(5, IsolateRunner.spawn);
+Future<LoadBalancer>? loadBalancer;
 
 void main(List<String> arguments) async {
-  // testRun();
-  // testRunMultiple();
+  createLoadBalancer();
+  await testRun();
+  await testRunMultiple();
+  closeLoadBalancer();
 }
 
 /// It's like a complecated computation and do some heavy tasks.
@@ -19,22 +19,54 @@ bool startRunning(int targetMeters) {
   return true;
 }
 
+/// create()
+/// Create isolate pool that has specific count isoaltes.
+/// Automatic load balancing.
+void createLoadBalancer() {
+  loadBalancer = LoadBalancer.create(5, IsolateRunner.spawn);
+}
+
+/// close()
+/// Stop all runners and release.
+void closeLoadBalancer() async {
+  if (loadBalancer == null) {
+    print("Need to create loadBalancer first!");
+    return;
+  }
+
+  final LoadBalancer lb = await loadBalancer!;
+  lb.close();
+  loadBalancer = null;
+
+  print("All runners were released!");
+}
+
 /// run()
 /// It is like compute(), but it can save some cost because of rebuilding isolate.
-void testRun() async {
+Future<void> testRun() async {
+  if (loadBalancer == null) {
+    print("Need to create loadBalancer first!");
+    return;
+  }
+
   print("testRun() - Start");
 
-  final LoadBalancer lb = await loadBalancer;
+  final LoadBalancer lb = await loadBalancer!;
   final bool isFinished = await lb.run(startRunning, 10000);
   print(isFinished ? "I am winner!" : "I am loser..");
 }
 
 /// runMultiple()
 /// Use the isolates which are free more do the same task parallel.
-void testRunMultiple() async {
+Future<void> testRunMultiple() async {
+  if (loadBalancer == null) {
+    print("Need to create loadBalancer first!");
+    return;
+  }
+
   print("testRunMultiple() - Start");
 
-  final LoadBalancer lb = await loadBalancer;
+  final LoadBalancer lb = await loadBalancer!;
   final List<FutureOr<bool?>> result = lb.runMultiple(3, startRunning, 10000);
   for (FutureOr<bool?> isFinishedFuture in result) {
     bool isFinished = false;
